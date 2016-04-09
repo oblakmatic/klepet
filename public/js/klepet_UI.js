@@ -1,9 +1,15 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
+  
+  var jeSlika = sporocilo.indexOf(('http://' || 'https://') && ('.png'||'.jpg' ||'.gif'));
   if (jeSmesko) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  } else {
+  } 
+  else if (jeSlika){
+     return $('<div style="font-weight: bold;"></div>').html(sporocilo);
+  }
+  else {
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
 }
@@ -15,6 +21,8 @@ function divElementHtmlTekst(sporocilo) {
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
+  sporocilo = dodajSlike(sporocilo);
+  
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
@@ -131,3 +139,22 @@ function dodajSmeske(vhodnoBesedilo) {
   }
   return vhodnoBesedilo;
 }
+
+
+function dodajSlike(vhodnoBesedilo) {
+  
+  var exp = new RegExp(/(http:\/\/|https:\/\/)\S+(.jpg|.png|.gif)/, 'gi');
+  
+
+  var onlyPics = vhodnoBesedilo.match(exp);
+  
+  for (var x in onlyPics){
+      if (!(onlyPics[x].match(/(smiley.png|kiss.png|wink.png|like.png|sad.png)/))){
+       vhodnoBesedilo=vhodnoBesedilo.replace(onlyPics[x], ("<img id='slika' src='"+ onlyPics[x] +"' />"));
+
+      }
+  }
+  
+  return vhodnoBesedilo;
+ }
+
